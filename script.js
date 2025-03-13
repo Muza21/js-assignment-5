@@ -72,7 +72,9 @@ class Stack extends BaseStorage{
         if(this.isEmpty()){
             throw Error('the stack is empty');
         }
+        const topElement = this.getStorage()[this.getStorage().length-1];
         this.getStorage().length -= 1;
+        return topElement;
     }
 
     peek(){
@@ -153,10 +155,12 @@ class Queue extends BaseStorage{
             throw Error('the queue is empty');
         }
         const storage = this.getStorage();
+        const firstElement = storage[0];
         for(let i = 0; i<storage.length - 1;i++){
             storage[i] = storage[i+1];
         }
         storage.length -= 1;
+        return firstElement;
     }
 
     peek(){
