@@ -170,8 +170,9 @@ class Queue extends BaseStorage{
         if(typeof iterable[Symbol.iterator] !== 'function'){
             throw Error('the entity is not iterable');
         }
+        const tempArr = Array.from(iterable);
         const queue = new Queue(iterable.length);
-        for(const element of iterable){
+        for(const element of tempArr){
             queue.push(element);
         }
         return queue;
