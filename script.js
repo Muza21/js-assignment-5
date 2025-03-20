@@ -38,6 +38,28 @@ class BaseStorage{
     toArray(){
         return [...this.#storage];
     }
+
+    isFull(){
+        return this.#storage.length >= this.#maxSize;
+    }
+
+    checkFull(){
+        if(this.isFull()){
+            throw Error(`the ${this.constructor.name} is full`);
+        }
+    }
+
+    checkEmpty(){
+        if(this.isEmpty()){
+            throw Error(`the ${this.constructor.name} is empty`);
+        }
+    }
+
+    checkIterable(iterable){
+        if(typeof iterable[Symbol.iterator] !== 'function'){
+            throw Error('the entity is not iterable');
+        }
+    }
 }
 
 const baseStorage = new BaseStorage(5);
@@ -56,22 +78,13 @@ const baseStorage = new BaseStorage(5);
 // - fromIterable(iterable) - returns a new Stack, the elements of which are the elements of the passed iterable entity. The maximum number of elements of such a stack must be equal to the length of this entity. If the entity is not iterable, generate an error.
 
 class Stack extends BaseStorage{
-    constructor(maxSize){
-        super(maxSize);
-    }
-
     push(elem){
-        const length = this.getStorage().length
-        if(this.getMaxSize()<=length){
-            throw Error('the stack is full');
-        }
-        this.getStorage()[length] = elem;
+        this.checkFull();
+        this.getStorage()[this.getStorage().length] = elem;
     }
     
     pop(){
-        if(this.isEmpty()){
-            throw Error('the stack is empty');
-        }
+        this.checkEmpty()
         const topElement = this.getStorage()[this.getStorage().length-1];
         this.getStorage().length -= 1;
         return topElement;
@@ -85,11 +98,9 @@ class Stack extends BaseStorage{
     }
 
     static fromIterable(iterable){
-        if(typeof iterable[Symbol.iterator] !== 'function'){
-            throw Error('the entity is not iterable');
-        }
+        this.checkIterable(iterable);
         const tempArr = Array.from(iterable);
-        const stack = new Stack(iterable.length);
+        const stack = new Stack(tempArr.length);
         for(const element of tempArr){
             stack.push(element);
         }
@@ -112,10 +123,10 @@ stack.pop();
 console.log(stack.toArray());
 stack.peek();
 
-const testArray = [10,20,30,40,50,60,70,80,90]
-const stack2 = Stack.fromIterable(testArray);
-console.log('stack2:');
-console.log(stack2.toArray());
+// const testArray = [10,20,30,40,50,60,70,80,90]
+// const stack2 = Stack.fromIterable(testArray);
+// console.log('stack2:');
+// console.log(stack2.toArray());
 
 
 // stack2.push(2) // generates an error: stack is full
@@ -138,13 +149,9 @@ console.log(stack2.toArray());
 // - fromIterable(iterable) - returns a new Queue, the elements of which are the elements of the passed iterable entity. The maximum number of elements of such a queue must be equal to the length of this entity. If the entity is not iterable, generate an error.
 
 class Queue extends BaseStorage{
-    constructor(maxSize){
-        super(maxSize);
-    }
-
     push(elem){
         const length = this.getStorage().length
-        if(this.getMaxSize()<=length){
+        if(this.isFull()){
             throw Error('the queue is full');
         }
         this.getStorage()[length] = elem;
@@ -164,18 +171,16 @@ class Queue extends BaseStorage{
     }
 
     peek(){
-        if(this.getStorage().length === 0){
+        if(this.isEmpty()){
             return null;
         }
         return this.getStorage()[0];
     }
 
     static fromIterable(iterable){
-        if(typeof iterable[Symbol.iterator] !== 'function'){
-            throw Error('the entity is not iterable');
-        }
+        this.checkIterable(iterable);
         const tempArr = Array.from(iterable);
-        const queue = new Queue(iterable.length);
+        const queue = new Queue(tempArr.length);
         for(const element of tempArr){
             queue.push(element);
         }
@@ -196,9 +201,9 @@ queue.shift();
 console.log(queue.toArray());
 queue.peek();
 
-const queue2 = Queue.fromIterable(testArray);
-console.log('queue2');
-console.log(queue2.toArray());
+// const queue2 = Queue.fromIterable(testArray);
+// console.log('queue2');
+// console.log(queue2.toArray());
 
 // queue2.push(2) // generates an error: queue is full
 // const queue3 = new Queue(5);
